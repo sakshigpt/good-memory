@@ -24,7 +24,7 @@ https://github.com/user-attachments/assets/2d48a8e0-3fe7-4218-acb9-fe4be2e25ffe
 ---
 
 ## Demo
-[![Good Memory Demo](docs/thumbnail.png)]([https://loom.com/share/your-link-here](https://www.loom.com/share/cc526ee8837c42a4a6d6a46438bd5d72))
+[![Good Memory Demo](docs/thumbnail.png)]([https://loom.com/share/your-link-here](https://www.loom.com/share/cc526ee8837c42a4a6d6a46438bd5d72)
 
 
 ---
