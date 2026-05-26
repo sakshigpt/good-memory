@@ -18,14 +18,9 @@ Built as a focused, end-to-end project: a Flask backend, a zero-build vanilla-JS
 
 ---
 
-## Sneak Peak 
-https://github.com/user-attachments/assets/2d48a8e0-3fe7-4218-acb9-fe4be2e25ffe
-
----
-
 ## Demo
 [![Good Memory Demo](docs/thumbnail.png)](https://www.loom.com/share/cc526ee8837c42a4a6d6a46438bd5d72)
-
+<img width="1003" height="566" alt="Good Memory" src="https://github.com/user-attachments/assets/2e65955c-9c2f-4568-9ab3-bf90820ad0cf" />
 
 ---
 
