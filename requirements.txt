@@ -1,0 +1,10 @@
+# Good Memory dependencies. All of these are already installed in
+# /usr/bin/python3 (macOS CommandLineTools Python 3.9.6) on this machine.
+# Listed here for reproducibility on a fresh environment.
+flask>=3.1.0
+anthropic>=0.100.0
+openai-whisper>=20240930
+torch>=2.0.0
+httpx>=0.25.0
+python-dotenv>=1.0.0
+# No CORS dependency: the SPA is served by Flask itself (same origin).

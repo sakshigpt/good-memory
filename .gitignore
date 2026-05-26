@@ -1,0 +1,33 @@
+# --- Secrets: NEVER commit ---
+.env
+.env.*
+!.env.example
+
+# --- Personal data (your notes about real people) ---
+data/
+*.db
+*.sqlite
+*.sqlite3
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+
+# --- ML model caches (Whisper / torch weights are large) ---
+*.pt
+*.pth
+.cache/
+
+# --- Editor / OS noise ---
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# --- Local tooling ---
+.claude/

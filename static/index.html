@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Good Memory</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Sidebar -->
+    <aside id="sidebar">
+      <div class="brand">
+        <span class="logo">◆</span>
+        <h1>Good Memory</h1>
+      </div>
+
+      <button class="btn primary block" id="btn-add-person">+ Add person</button>
+
+      <button class="navlink" id="nav-home">Home</button>
+      <button class="navlink" id="nav-conflicts">
+        Conflicts <span class="badge hidden" id="conflict-badge">0</span>
+      </button>
+
+      <div class="sidebar-section-label">People</div>
+      <input type="text" id="people-search" placeholder="Search people..." />
+      <div id="people-list"></div>
+    </aside>
+
+    <!-- Main -->
+    <main id="main">
+      <!-- HOME -->
+      <section id="view-home" class="view">
+        <div class="ask-bar">
+          <input type="text" id="global-q" placeholder="Ask anything — e.g. “What's the name of Priya's dog?”" />
+          <button class="btn primary" id="global-ask">Ask</button>
+        </div>
+        <div id="global-answer" class="answer-card hidden"></div>
+
+        <h2 class="muted">Your people</h2>
+        <div id="home-people" class="card-grid"></div>
+        <div id="home-empty" class="empty hidden">
+          No people yet. Click <strong>+ Add person</strong> to start.
+        </div>
+      </section>
+
+      <!-- ADD PERSON -->
+      <section id="view-add-person" class="view hidden">
+        <h2 id="add-person-title">Add a person</h2>
+        <div class="form">
+          <label>Name<input type="text" id="ap-name" placeholder="Priya Sharma" /></label>
+          <label>Relationship
+            <select id="ap-rel">
+              <option>friend</option><option>family</option><option>colleague</option>
+              <option>partner</option><option>mentor</option><option>acquaintance</option>
+              <option>other</option>
+            </select>
+          </label>
+          <label>Context (optional)
+            <textarea id="ap-context" rows="3" placeholder="How you know them, where you met..."></textarea>
+          </label>
+          <div class="row">
+            <button class="btn primary" id="ap-save">Save</button>
+            <button class="btn ghost" id="ap-cancel">Cancel</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PERSON DETAIL -->
+      <section id="view-person" class="view hidden">
+        <div class="person-header">
+          <div>
+            <h2 id="p-name"></h2>
+            <div class="sub"><span id="p-rel" class="pill"></span> <span id="p-context" class="muted"></span></div>
+          </div>
+          <div class="row">
+            <button class="btn ghost small" id="p-edit">Edit</button>
+            <button class="btn danger small" id="p-delete">Delete</button>
+          </div>
+        </div>
+
+        <div class="tabs">
+          <button class="tab active" data-tab="notes">Notes</button>
+          <button class="tab" data-tab="facts">Facts</button>
+          <button class="tab" data-tab="briefing">Briefing</button>
+          <button class="tab" data-tab="qa">Ask</button>
+        </div>
+
+        <!-- Notes tab -->
+        <div class="tabpane" id="tab-notes">
+          <div class="note-composer">
+            <textarea id="note-input" rows="4"
+              placeholder="What did you talk about? Type it, or hit Record to speak..."></textarea>
+            <div class="row">
+              <button class="btn record" id="btn-record">● Record</button>
+              <span id="rec-status" class="muted"></span>
+              <span class="spacer"></span>
+              <button class="btn primary" id="btn-save-note">Save note</button>
+            </div>
+          </div>
+          <div id="note-result" class="hidden"></div>
+          <div id="notes-list"></div>
+        </div>
+
+        <!-- Facts tab -->
+        <div class="tabpane hidden" id="tab-facts">
+          <p class="muted">Auto-extracted from your notes. Double-click a value to edit.</p>
+          <div id="facts-list"></div>
+        </div>
+
+        <!-- Briefing tab -->
+        <div class="tabpane hidden" id="tab-briefing">
+          <div class="row">
+            <input type="text" id="brief-focus" placeholder="Optional focus, e.g. “their new job”" />
+            <button class="btn primary" id="btn-brief">Brief me</button>
+          </div>
+          <div id="briefing-output" class="answer-card hidden"></div>
+        </div>
+
+        <!-- Q&A tab -->
+        <div class="tabpane hidden" id="tab-qa">
+          <div class="row">
+            <input type="text" id="person-q" placeholder="Ask about this person..." />
+            <button class="btn primary" id="btn-person-ask">Ask</button>
+          </div>
+          <div id="person-qa-log"></div>
+        </div>
+      </section>
+
+      <!-- CONFLICTS -->
+      <section id="view-conflicts" class="view hidden">
+        <h2>Conflicts to resolve</h2>
+        <p class="muted">When a new note contradicts something already saved, it waits here.</p>
+        <div id="conflicts-list"></div>
+        <div id="conflicts-empty" class="empty hidden">Nothing to resolve. 🎉</div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+  <script src="/static/app.js"></script>
+</body>
+</html>
