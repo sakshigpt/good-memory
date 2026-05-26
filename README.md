@@ -10,10 +10,10 @@ Built as a focused, end-to-end project: a Flask backend, a zero-build vanilla-JS
 
 - **People** — add the people you care about, with a relationship and a bit of context.
 - **Notes** — after a conversation, jot a quick note (typed) or **speak it** and have it transcribed.
-- **Auto-extracted facts** — Claude reads each note and pulls out durable facts (employer, pets, birthdays, family, hobbies…) into a clean, structured profile.
+- **Auto-extracted facts** — Claude reads each note and pulls out durable facts (employer, pets, birthdays, family, hobbies, quality assessments…) into a clean, structured profile.
 - **Conflict resolution** — if a new note contradicts something already saved ("moved from Google → OpenAI"), it's flagged for you to resolve (keep old / use new / merge) instead of silently overwriting.
 - **Pre-call briefings** — *"Brief me on Priya"* generates a warm, accurate summary with conversation starters.
-- **Freeform Q&A** — ask natural questions across everyone you track; it answers only from what it actually knows (no hallucinating).
+- **Freeform Q&A** — ask natural questions across everyone you track; answers are grounded in raw notes *and* structured facts (no hallucinating).
 
 ---
 
@@ -37,7 +37,7 @@ Flask (routes/)  ──►  Services (services/)  ──►  SQLite (database.py
                           │
                           ├─ extraction  → Claude Haiku   (note → structured facts)
                           ├─ briefing    → Claude Sonnet  (facts+notes → summary)
-                          ├─ qa          → Claude Haiku   (question → answer)
+                          ├─ qa          → Claude Haiku   (notes+facts → answer)
                           ├─ conflict    → pure Python    (no API call)
                           └─ transcription → local Whisper (offline, no API)
 ```
@@ -60,9 +60,9 @@ The design rule throughout: **use the expensive smart model only where judgment 
 
 ---
 
-## Two engineering problems worth highlighting
+## Four engineering problems worth highlighting
 
-Both were caught *during* a build-a-little / test-a-little loop, not after.
+All four were caught *during* a build-a-little / test-a-little loop, not after.
 
 ### 1. Reliable conflict detection despite a non-deterministic LLM
 
@@ -75,6 +75,23 @@ Conflict detection matches facts on a `key` (e.g. `employer_name`). The problem:
 Whisper normally shells out to `ffmpeg` to decode audio — but the target machine had no `ffmpeg` and no easy way to install it.
 
 **Fix:** sidestep `ffmpeg` entirely. The **browser** decodes the recording via the Web Audio API and re-encodes it as a 16 kHz mono PCM WAV; the **server** reads that WAV with Python's stdlib `wave` module into a NumPy array and hands it straight to Whisper. Result: voice works fully offline with **zero extra system dependencies.**
+
+### 3. Q&A answered from structured facts, ignoring raw notes
+
+After logging a rich note about a driver — "incredible, cheapest rates, available at odd hours, highly recommended" — asking *"How is Juan as a driver?"* returned *"I only know his job title is driver."* The problem had two parts:
+
+- The extraction prompt only captured objective facts (names, places, dates), so qualitative assessments never made it into structured storage.
+- The Q&A prompt ordered **facts before notes** in the context, and Claude treated the structured facts as the canonical truth. When nothing quality-related appeared there, it concluded the information wasn't stored.
+
+**Fix (extraction):** added an `assessments` category to the extraction schema. Claude now explicitly extracts quality signals — reliability, pricing, standout strengths, recommendations — for service providers and professionals.
+
+**Fix (Q&A):** notes are now placed *before* facts in the prompt context, and the system prompt explicitly tells Claude that notes are the **primary source** for qualitative questions. The instruction *"check the notes carefully before concluding something isn't known"* eliminated the false "I don't have that information" responses.
+
+### 4. Global Q&A had no note content at all
+
+The "Ask Away" view (cross-person Q&A) called `all_people_with_facts()`, which only fetched structured facts — no raw notes. Qualitative questions from the global view always failed because the note text simply wasn't in the prompt.
+
+**Fix:** `all_people_with_facts()` now fetches the most recent notes per person alongside facts. The Q&A route passes both to Claude for every query, whether person-scoped or global.
 
 ---
 
@@ -137,3 +154,4 @@ This is intentionally scoped as a private, single-user, local tool. To run it as
 - No secrets are committed — `.env` and the database are gitignored; `.env.example` documents required config.
 - Conflict detection is deliberately *not* an LLM call: it's deterministic, free, and instant.
 - The frontend has no build step on purpose — clone and run, nothing to compile.
+- The Q&A service places raw notes *before* structured facts in the prompt, and explicitly instructs the model to treat notes as the primary source. This prevents the common failure mode where an LLM ignores rich qualitative context in favour of a sparse structured record.

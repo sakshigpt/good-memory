@@ -45,7 +45,8 @@ def qa():
             {"person": {"name": p["name"],
                         "relationship_type": p["relationship_type"],
                         "context": p.get("context", "")},
-             "facts": p["facts"]}
+             "facts": p["facts"],
+             "notes": p.get("notes", [])}   # notes now included for global Q&A
             for p in db.all_people_with_facts()
         ]
 

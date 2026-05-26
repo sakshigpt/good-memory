@@ -59,6 +59,13 @@ function showView(id) {
   $("#" + id).classList.remove("hidden");
 }
 
+// Highlight the matching sidebar nav button for the current view.
+function setActiveNav(btnId) {
+  $$(".navlink").forEach((n) => n.classList.remove("active"));
+  const btn = btnId ? $("#" + btnId) : null;
+  if (btn) btn.classList.add("active");
+}
+
 /* ----------------------------- People list ----------------------------- */
 async function loadPeople() {
   state.people = await api("GET", "/people");
@@ -104,10 +111,11 @@ function renderHome() {
 /* ----------------------------- Add / edit person ----------------------------- */
 function openAddPerson() {
   state.editingPersonId = null;
-  $("#add-person-title").textContent = "Add a person";
+  $("#add-person-title").textContent = "Add Someone";
   $("#ap-name").value = "";
   $("#ap-rel").value = "friend";
   $("#ap-context").value = "";
+  setActiveNav("btn-add-person");
   showView("view-add-person");
   $("#ap-name").focus();
 }
@@ -151,6 +159,7 @@ async function openPerson(id) {
   } catch (e) { return toast(e.message, true); }
   renderSidebar();
   renderPerson();
+  setActiveNav(null);   // no top-level nav item active when viewing a person
   showView("view-person");
   switchTab("notes");
 }
@@ -448,12 +457,16 @@ function renderConflictCard(c, inline = false) {
     "Conflict on “" + (c.new_key || c.key || "").replace(/_/g, " ") + "”"
     + (c.person_name ? " — " + c.person_name : "")));
   card.appendChild(el("div", { class: "conflict-vals" }, [
-    el("div", { class: "cv" }, [el("div", { class: "lbl" }, "Currently saved"),
-      el("div", {}, c.existing_value)]),
-    el("div", { class: "cv" }, [el("div", { class: "lbl" }, "New from note"),
-      el("div", {}, c.new_value)]),
+    el("div", { class: "cv" }, [
+      el("div", { class: "lbl" }, "Currently saved"),
+      el("div", { class: "cv-val" }, c.existing_value),
+    ]),
+    el("div", { class: "cv" }, [
+      el("div", { class: "lbl" }, "New from note"),
+      el("div", { class: "cv-val" }, c.new_value),
+    ]),
   ]));
-  const merge = el("input", { type: "text", placeholder: "or type a merged value..." });
+  const merge = el("input", { type: "text", placeholder: "Type a merged value…" });
   const resolve = async (resolution) => {
     try {
       const body = { resolution };
@@ -462,14 +475,14 @@ function renderConflictCard(c, inline = false) {
         body.merge_value = merge.value.trim();
       }
       await api("POST", "/conflicts/" + c.conflict_id + "/resolve", body);
-      toast("Resolved");
+      toast("Resolved ✓");
       card.remove();
       await loadPeople();
       if (state.activePerson) { await refreshActivePerson(); renderFacts(); }
       if (!inline) loadConflicts();
     } catch (e) { toast(e.message, true); }
   };
-  card.appendChild(el("div", { class: "row" }, [
+  card.appendChild(el("div", { class: "conflict-actions" }, [
     el("button", { class: "btn ghost small", onclick: () => resolve("old") }, "Keep current"),
     el("button", { class: "btn primary small", onclick: () => resolve("new") }, "Use new"),
   ]));
@@ -480,6 +493,7 @@ function renderConflictCard(c, inline = false) {
 }
 
 async function loadConflicts() {
+  setActiveNav("nav-conflicts");
   showView("view-conflicts");
   const res = await api("GET", "/conflicts");
   const wrap = $("#conflicts-list");
@@ -508,7 +522,16 @@ async function refreshConflictBadge(count) {
 /* ----------------------------- Wire up events ----------------------------- */
 function bind() {
   $("#btn-add-person").addEventListener("click", openAddPerson);
-  $("#nav-home").addEventListener("click", () => { renderHome(); showView("view-home"); });
+  $("#nav-home").addEventListener("click", () => {
+    setActiveNav("nav-home");
+    renderHome();
+    showView("view-home");
+  });
+  $("#nav-ask").addEventListener("click", () => {
+    setActiveNav("nav-ask");
+    showView("view-ask");
+    $("#global-q").focus();
+  });
   $("#nav-conflicts").addEventListener("click", loadConflicts);
   $("#people-search").addEventListener("input", renderSidebar);
 
@@ -542,4 +565,7 @@ function bind() {
 }
 
 bind();
-loadPeople().then(() => showView("view-home"));
+loadPeople().then(() => {
+  setActiveNav("nav-home");
+  showView("view-home");
+});

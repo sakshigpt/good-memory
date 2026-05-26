@@ -4,62 +4,111 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Good Memory</title>
+  <!-- Syne (display / nav) + Inter (body) from Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/static/style.css" />
 </head>
 <body>
   <div id="app">
-    <!-- Sidebar -->
+
+    <!-- ===== SIDEBAR ===== -->
     <aside id="sidebar">
+      <!-- Decorative blobs (pure CSS, aria-hidden) -->
+      <div class="blob blob-1" aria-hidden="true"></div>
+      <div class="blob blob-2" aria-hidden="true"></div>
+
+      <!-- Brand wordmark -->
       <div class="brand">
-        <span class="logo">◆</span>
-        <h1>Good Memory</h1>
+        <div class="brand-mark">
+          <span class="brand-good">GOOD</span>
+          <span class="brand-memory">MEMORY</span>
+        </div>
       </div>
 
-      <button class="btn primary block" id="btn-add-person">+ Add person</button>
+      <!-- Primary nav -->
+      <nav class="sidebar-nav" aria-label="Main navigation">
+        <button class="navlink active" id="nav-home">Home</button>
+        <button class="navlink" id="nav-ask">Ask Away</button>
+        <button class="navlink" id="btn-add-person">Add Someone</button>
+      </nav>
 
-      <button class="navlink" id="nav-home">Home</button>
-      <button class="navlink" id="nav-conflicts">
-        Conflicts <span class="badge hidden" id="conflict-badge">0</span>
-      </button>
+      <!-- People search + list -->
+      <div class="sidebar-people">
+        <input type="text" id="people-search" placeholder="Search people…" aria-label="Search people" />
+        <div id="people-list" role="list"></div>
+      </div>
 
-      <div class="sidebar-section-label">People</div>
-      <input type="text" id="people-search" placeholder="Search people..." />
-      <div id="people-list"></div>
+      <!-- Admin / conflicts — sits at the bottom -->
+      <div class="sidebar-bottom">
+        <button class="navlink navlink--conflicts" id="nav-conflicts">
+          Conflicts
+          <span class="badge hidden" id="conflict-badge" aria-label="pending conflicts">0</span>
+        </button>
+      </div>
     </aside>
 
-    <!-- Main -->
+    <!-- ===== MAIN ===== -->
     <main id="main">
-      <!-- HOME -->
-      <section id="view-home" class="view">
-        <div class="ask-bar">
-          <input type="text" id="global-q" placeholder="Ask anything — e.g. “What's the name of Priya's dog?”" />
-          <button class="btn primary" id="global-ask">Ask</button>
-        </div>
-        <div id="global-answer" class="answer-card hidden"></div>
 
-        <h2 class="muted">Your people</h2>
+      <!-- HOME — people grid -->
+      <section id="view-home" class="view">
+        <div class="view-header">
+          <h2 class="view-title">Your People</h2>
+        </div>
         <div id="home-people" class="card-grid"></div>
         <div id="home-empty" class="empty hidden">
-          No people yet. Click <strong>+ Add person</strong> to start.
+          <div class="empty-wordmark" aria-hidden="true">
+            <span class="ew-good">GOOD</span>
+            <span class="ew-memory">MEMORY</span>
+          </div>
+          <p class="empty-msg">No one here yet.<br>Hit <strong>Add Someone</strong> to start.</p>
         </div>
       </section>
 
-      <!-- ADD PERSON -->
+      <!-- ASK AWAY — global Q&A -->
+      <section id="view-ask" class="view hidden">
+        <div class="view-header">
+          <h2 class="view-title">Ask Away</h2>
+          <p class="view-sub">Ask anything across everyone you know.</p>
+        </div>
+        <div class="ask-bar">
+          <input type="text" id="global-q"
+            placeholder="What's the name of Priya's dog?" aria-label="Ask a question" />
+          <button class="btn primary" id="global-ask">Ask</button>
+        </div>
+        <div id="global-answer" class="answer-card hidden" role="status"></div>
+      </section>
+
+      <!-- ADD / EDIT PERSON -->
       <section id="view-add-person" class="view hidden">
-        <h2 id="add-person-title">Add a person</h2>
+        <div class="view-header">
+          <h2 id="add-person-title" class="view-title">Add Someone</h2>
+        </div>
         <div class="form">
-          <label>Name<input type="text" id="ap-name" placeholder="Priya Sharma" /></label>
-          <label>Relationship
+          <label>
+            Name
+            <input type="text" id="ap-name" placeholder="Priya Sharma" autocomplete="off" />
+          </label>
+          <label>
+            Relationship
             <select id="ap-rel">
-              <option>friend</option><option>family</option><option>colleague</option>
-              <option>partner</option><option>mentor</option><option>acquaintance</option>
+              <option>friend</option>
+              <option>family</option>
+              <option>colleague</option>
+              <option>partner</option>
+              <option>mentor</option>
+              <option>acquaintance</option>
               <option>other</option>
             </select>
           </label>
-          <label>Context (optional)
-            <textarea id="ap-context" rows="3" placeholder="How you know them, where you met..."></textarea>
+          <label>
+            Context <span class="label-optional">(optional)</span>
+            <textarea id="ap-context" rows="3"
+              placeholder="How you know them, where you met…"></textarea>
           </label>
-          <div class="row">
+          <div class="form-actions">
             <button class="btn primary" id="ap-save">Save</button>
             <button class="btn ghost" id="ap-cancel">Cancel</button>
           </div>
@@ -69,31 +118,37 @@
       <!-- PERSON DETAIL -->
       <section id="view-person" class="view hidden">
         <div class="person-header">
-          <div>
-            <h2 id="p-name"></h2>
-            <div class="sub"><span id="p-rel" class="pill"></span> <span id="p-context" class="muted"></span></div>
+          <div class="person-header-info">
+            <h2 id="p-name" class="person-name"></h2>
+            <div class="person-meta">
+              <span id="p-rel" class="pill"></span>
+              <span id="p-context" class="muted"></span>
+            </div>
           </div>
-          <div class="row">
+          <div class="person-header-actions">
             <button class="btn ghost small" id="p-edit">Edit</button>
             <button class="btn danger small" id="p-delete">Delete</button>
           </div>
         </div>
 
-        <div class="tabs">
-          <button class="tab active" data-tab="notes">Notes</button>
-          <button class="tab" data-tab="facts">Facts</button>
-          <button class="tab" data-tab="briefing">Briefing</button>
-          <button class="tab" data-tab="qa">Ask</button>
+        <div class="tabs" role="tablist">
+          <button class="tab active" data-tab="notes" role="tab">Notes</button>
+          <button class="tab" data-tab="facts" role="tab">Facts</button>
+          <button class="tab" data-tab="briefing" role="tab">Briefing</button>
+          <button class="tab" data-tab="qa" role="tab">Ask</button>
         </div>
 
         <!-- Notes tab -->
-        <div class="tabpane" id="tab-notes">
+        <div class="tabpane" id="tab-notes" role="tabpanel">
           <div class="note-composer">
             <textarea id="note-input" rows="4"
-              placeholder="What did you talk about? Type it, or hit Record to speak..."></textarea>
-            <div class="row">
-              <button class="btn record" id="btn-record">● Record</button>
-              <span id="rec-status" class="muted"></span>
+              placeholder="What did you talk about? Type it, or hit Record to speak…"></textarea>
+            <div class="note-composer-actions">
+              <button class="btn record" id="btn-record" aria-label="Record voice note">
+                <span class="rec-dot" aria-hidden="true"></span>
+                <span class="rec-label">Record</span>
+              </button>
+              <span id="rec-status" class="muted" aria-live="polite"></span>
               <span class="spacer"></span>
               <button class="btn primary" id="btn-save-note">Save note</button>
             </div>
@@ -103,24 +158,25 @@
         </div>
 
         <!-- Facts tab -->
-        <div class="tabpane hidden" id="tab-facts">
-          <p class="muted">Auto-extracted from your notes. Double-click a value to edit.</p>
+        <div class="tabpane hidden" id="tab-facts" role="tabpanel">
+          <p class="tab-desc">Auto-extracted from your notes. Double-click a value to edit.</p>
           <div id="facts-list"></div>
         </div>
 
         <!-- Briefing tab -->
-        <div class="tabpane hidden" id="tab-briefing">
-          <div class="row">
-            <input type="text" id="brief-focus" placeholder="Optional focus, e.g. “their new job”" />
+        <div class="tabpane hidden" id="tab-briefing" role="tabpanel">
+          <div class="ask-bar brief-bar">
+            <input type="text" id="brief-focus"
+              placeholder="Optional focus — e.g. "their new job"" />
             <button class="btn primary" id="btn-brief">Brief me</button>
           </div>
-          <div id="briefing-output" class="answer-card hidden"></div>
+          <div id="briefing-output" class="answer-card hidden" role="status"></div>
         </div>
 
         <!-- Q&A tab -->
-        <div class="tabpane hidden" id="tab-qa">
-          <div class="row">
-            <input type="text" id="person-q" placeholder="Ask about this person..." />
+        <div class="tabpane hidden" id="tab-qa" role="tabpanel">
+          <div class="ask-bar">
+            <input type="text" id="person-q" placeholder="Ask about this person…" />
             <button class="btn primary" id="btn-person-ask">Ask</button>
           </div>
           <div id="person-qa-log"></div>
@@ -129,15 +185,21 @@
 
       <!-- CONFLICTS -->
       <section id="view-conflicts" class="view hidden">
-        <h2>Conflicts to resolve</h2>
-        <p class="muted">When a new note contradicts something already saved, it waits here.</p>
+        <div class="view-header">
+          <h2 class="view-title">Conflicts</h2>
+          <p class="view-sub">A new note contradicted something already saved. Resolve before it gets written.</p>
+        </div>
         <div id="conflicts-list"></div>
-        <div id="conflicts-empty" class="empty hidden">Nothing to resolve. 🎉</div>
+        <div id="conflicts-empty" class="empty hidden">
+          <span class="empty-check" aria-hidden="true">✓</span>
+          All clear — nothing to resolve.
+        </div>
       </section>
+
     </main>
   </div>
 
-  <div id="toast" class="toast hidden"></div>
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
   <script src="/static/app.js"></script>
 </body>
 </html>

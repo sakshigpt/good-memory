@@ -262,8 +262,11 @@ def mark_conflict_resolved(conflict_id, status, resolution_note=""):
 
 # ----------------------------- Aggregates for AI -----------------------------
 
-def all_people_with_facts():
-    """Condensed snapshot of everyone + their active facts, for global Q&A."""
+def all_people_with_facts(notes_per_person=4):
+    """Snapshot of everyone + active facts + recent notes, for global Q&A.
+
+    notes_per_person: how many recent notes to include per person. Kept low to
+    control prompt size; increase if you need more history in global Q&A."""
     people = list_people()
     out = []
     for p in people:
@@ -271,6 +274,8 @@ def all_people_with_facts():
             "id": p["id"],
             "name": p["name"],
             "relationship_type": p["relationship_type"],
+            "context": p.get("context", ""),
             "facts": get_active_facts(p["id"]),
+            "notes": list_notes(p["id"], limit=notes_per_person),
         })
     return out

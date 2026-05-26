@@ -7,26 +7,33 @@ from services.claude_client import complete
 
 CATEGORIES = [
     "employer", "family", "pets", "personal", "health",
-    "hobbies", "location", "preferences", "other",
+    "hobbies", "location", "preferences", "assessments", "other",
 ]
 
 SYSTEM = (
-    "You are a personal memory assistant. Extract durable, factual details about a "
-    "person from a conversation note. Return ONLY a JSON array (no prose, no markdown "
-    "fences). Each element is an object with exactly these keys:\n"
+    "You are a personal memory assistant. Extract durable details about a person from "
+    "a conversation note. Return ONLY a JSON array (no prose, no markdown fences). "
+    "Each element is an object with exactly these keys:\n"
     '  - "category": one of ' + ", ".join(CATEGORIES) + "\n"
     '  - "key": a short snake_case slot id, stable across notes '
     '(e.g. "employer_name", "job_title", "dog_name", "birthday", "spouse_name", '
-    '"home_city", "favorite_food"). Reuse the same key for the same kind of fact.\n'
+    '"home_city", "favorite_food", "overall_quality", "recommendation", '
+    '"personality_trait", "pricing", "availability"). Reuse the same key for the '
+    "same kind of fact.\n"
     '  - "value": the value as a concise string.\n\n'
     "Rules:\n"
-    "- Only extract clearly stated facts, never guesses or inferences.\n"
+    "- Extract clearly stated facts AND qualitative assessments / impressions.\n"
+    "  The 'assessments' category is for quality ratings, personality traits, "
+    "  standout attributes, and recommendations — e.g. overall_quality, "
+    "  recommendation, key_strength, pricing, availability, personality_trait.\n"
+    "- For service providers (drivers, contractors, vendors etc.) always capture "
+    "  quality signals: reliability, pricing, standout strengths, recommendation.\n"
     "- Dates: use YYYY-MM-DD if fully known, else a partial like 'March 15' or '1990'.\n"
     "- Family members: keys like 'mother_name', 'brother_name', 'son_name'.\n"
     "- Multiple of a kind: suffix with _1, _2 (e.g. 'dog_name_1', 'dog_name_2').\n"
     "- Do NOT extract the person's own name or relationship (already known).\n"
-    "- Skip transient small talk that has no lasting value.\n"
-    "- If nothing factual is present, return []."
+    "- Skip empty small talk with no lasting value.\n"
+    "- If nothing worth storing is present, return []."
 )
 
 
