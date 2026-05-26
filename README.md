@@ -6,6 +6,7 @@ Built as a focused, end-to-end project: a Flask backend, a zero-build vanilla-JS
 
 ---
 
+
 ## What it does
 
 - **People** — add the people you care about, with a relationship and a bit of context.
@@ -17,13 +18,13 @@ Built as a focused, end-to-end project: a Flask backend, a zero-build vanilla-JS
 
 ---
 
-## Screenshots
+## Sneak Peak 
 
-> _Add a screenshot or a short demo GIF here, e.g. `docs/demo.gif`._
+https://github.com/user-attachments/assets/97064746-f0ab-49b9-8235-ec9f95d3a217
 
-```
-[ Home / people list ]   [ Person detail: Notes · Facts · Briefing · Ask ]
-```
+
+[Watch a Demo ]([url](https://www.loom.com/share/cc526ee8837c42a4a6d6a46438bd5d72))
+
 
 ---
 
