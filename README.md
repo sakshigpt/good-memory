@@ -19,11 +19,12 @@ Built as a focused, end-to-end project: a Flask backend, a zero-build vanilla-JS
 ---
 
 ## Sneak Peak 
+https://github.com/user-attachments/assets/2d48a8e0-3fe7-4218-acb9-fe4be2e25ffe
 
-https://github.com/user-attachments/assets/97064746-f0ab-49b9-8235-ec9f95d3a217
+---
 
-
-[Watch a Demo ]([url](https://www.loom.com/share/cc526ee8837c42a4a6d6a46438bd5d72))
+## Demo
+[![Good Memory Demo](docs/thumbnail.png)]([https://loom.com/share/your-link-here](https://www.loom.com/share/cc526ee8837c42a4a6d6a46438bd5d72))
 
 
 ---
