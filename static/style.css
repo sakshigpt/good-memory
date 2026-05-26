@@ -85,8 +85,8 @@ input, textarea, select { font-family: inherit; }
   border-radius: 40% 60% 30% 70% / 40% 60% 40% 60%;
 }
 
-/* Everything in sidebar above the blobs */
-#sidebar > * { position: relative; z-index: 1; }
+/* Everything in sidebar sits above the blobs — exclude blobs themselves */
+#sidebar > *:not(.blob) { position: relative; z-index: 1; }
 
 /* Brand wordmark */
 .brand { user-select: none; }
@@ -171,11 +171,9 @@ input, textarea, select { font-family: inherit; }
 
 /* People section */
 .sidebar-people {
-  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  min-height: 0;
 }
 
 #people-search {
@@ -199,6 +197,7 @@ input, textarea, select { font-family: inherit; }
   display: flex;
   flex-direction: column;
   gap: 2px;
+  max-height: 220px;
   overflow-y: auto;
 }
 .person-item {
@@ -223,7 +222,11 @@ input, textarea, select { font-family: inherit; }
 .pi-dot { color: var(--lime); }
 
 /* Sidebar bottom */
-.sidebar-bottom { margin-top: auto; }
+.sidebar-bottom {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
 
 /* ─── Main content ────────────────────────────────────────── */
 #main {
@@ -568,6 +571,18 @@ textarea::placeholder { color: var(--lavender); }
   margin-bottom: 8px;
 }
 .src-voice { color: var(--blue); font-weight: 600; }
+.note-delete {
+  background: none;
+  border: none;
+  color: var(--lavender);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 2px;
+  margin-left: auto;
+  transition: color var(--transition);
+}
+.note-delete:hover { color: var(--danger); }
 
 /* Note result (extracted facts / conflicts banner) */
 #note-result:not(.hidden) {

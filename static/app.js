@@ -192,11 +192,25 @@ function renderNotes() {
     return;
   }
   notes.forEach((n) => {
+    const deleteBtn = el("button", {
+      class: "note-delete",
+      title: "Delete note",
+      onclick: async () => {
+        if (!confirm("Delete this note? Extracted facts from it will remain.")) return;
+        try {
+          await api("DELETE", "/notes/" + n.id);
+          await refreshActivePerson();
+          renderNotes();
+          toast("Note deleted");
+        } catch (e) { toast(e.message, true); }
+      },
+    }, "×");
     wrap.appendChild(el("div", { class: "note-item" }, [
       el("div", { class: "nmeta" }, [
         el("span", {}, (n.created_at || "").slice(0, 16).replace("T", " ")),
         el("span", { class: n.source === "voice" ? "src-voice" : "" },
            n.source === "voice" ? "🎙 voice" : "typed"),
+        deleteBtn,
       ]),
       el("div", {}, n.raw_text),
     ]));
